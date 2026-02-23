@@ -59,7 +59,53 @@
   }
 </style>
 </head>
-<body>
+<body><script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBpsBi6zHysv869CX0RCTf-TaRoqFfEN2o",
+  authDomain: "x-money-56c95.firebaseapp.com",
+  projectId: "x-money-56c95",
+  storageBucket: "x-money-56c95.firebasestorage.app",
+  messagingSenderId: "1031903258199",
+  appId: "1:1031903258199:web:907dcc6d97da7ab00c2512"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+const user = tg.initDataUnsafe.user;
+const userId = String(user.id);
+
+async function createUser() {
+  const userRef = doc(db, "users", userId);
+  const snap = await getDoc(userRef);
+
+  if (!snap.exists()) {
+    await setDoc(userRef, {
+      name: user.first_name,
+      balance: 0,
+      location: "India"
+    });
+  }
+}
+
+async function loadBalance() {
+  const userRef = doc(db, "users", userId);
+  const snap = await getDoc(userRef);
+  if (snap.exists()) {
+    document.getElementById("balance").innerText = snap.data().balance;
+  }
+}
+
+createUser().then(loadBalance);
+
+</script>
 
 <h2>X MONEY 💰</h2>
 
