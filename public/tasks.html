@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tasks</title>
+  <style>
+    body { background:#0f172a; color:white; font-family:Arial; }
+    .card { background:#1e293b; margin:15px; padding:15px; border-radius:10px; }
+    button { padding:8px 15px; background:#22c55e; border:none; border-radius:6px; color:white; }
+    .nav { position:fixed; bottom:0; width:100%; background:#111827; display:flex; justify-content:space-around; padding:10px 0; }
+    .nav a { color:white; text-decoration:none; }
+  </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">Task 🔗</h2>
+
+<div id="taskList"></div>
+
+<div style="text-align:center; margin-top:20px;">
+  <input id="codeInput" placeholder="Enter Verify Code">
+  <button onclick="submitCode()">Submit</button>
+</div>
+
+<div class="nav">
+  <a href="/index.html">Home</a>
+  <a href="/tasks.html">Task</a>
+  <a href="/withdraw.html">Withdraw</a>
+</div>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  const user = tg.initDataUnsafe.user;
+  const telegramId = user.id;
+
+  async function loadTasks() {
+    const res = await fetch("/api/getTasks");
+    const tasks = await res.json();
+
+    const container = document.getElementById("taskList");
+    container.innerHTML = "";
+
+    tasks.forEach(task => {
+      container.innerHTML += `
+        <div class="card">
+          <h4>${task.title}</h4>
+          <a href="${task.url}" target="_blank">
+            <button>Open Link</button>
+          </a>
+          <p>Reward: ${task.rewardPoints} Points</p>
+        </div>
+      `;
+    });
+  }
+
+  async function submitCode() {
+    const code = document.getElementById("codeInput").value;
+
+    const res = await fetch("/api/completeTask", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ telegramId, code })
+    });
+
+    const data = await res.json();
+    alert(data.success ? "Task Completed!" : data.error);
+  }
+
+  loadTasks();
+</script>
+
+</body>
+</html>
