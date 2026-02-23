@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Withdraw</title>
+  <style>
+    body { background:#0f172a; color:white; text-align:center; font-family:Arial; }
+    input { padding:10px; margin:8px; border-radius:6px; border:none; width:80%; }
+    button { padding:10px 20px; background:#22c55e; color:white; border:none; border-radius:6px; }
+  </style>
+</head>
+<body>
+
+<h2>Withdraw 💳</h2>
+
+<input type="number" id="amount" placeholder="Amount in INR"><br>
+<select id="method">
+  <option value="upi">UPI</option>
+  <option value="paytm">Paytm</option>
+  <option value="paypal">PayPal</option>
+</select><br>
+<button onclick="withdraw()">Submit</button>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  const user = tg.initDataUnsafe.user;
+  const telegramId = user.id;
+
+  async function withdraw() {
+    const amount = parseInt(document.getElementById("amount").value);
+    const method = document.getElementById("method").value;
+
+    await fetch("/api/withdraw", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ telegramId, amount, method })
+    });
+
+    alert("Withdraw request sent!");
+  }
+</script>
+
+</body>
+</html>
